@@ -1,36 +1,45 @@
 
-def parse(eq = str):
-    eq = eq.split('+')
-    if len(eq) > 1:
-        for i in range(len(eq)):
-            eq[i] = parse(str(eq[i]))
-        return sum(eq)
-    else:
-        eq = eq[0].split('-')
-        if len(eq) > 1:
-            for i in range(len(eq)):
-                eq[i] = parse(str(eq[i]))
-            return eq[0] - sum(eq[1:])
-        else:
-            eq = eq[0].split('*')
-            if len(eq) > 1:
-                prod = 1
-                for i in range(len(eq)):
-                    eq[i] = parse(str(eq[i]))
-                    prod *= float(eq[i])
-                return prod
-            else:
-                eq = eq[0].split('/')
-                if len(eq) > 1:
-                    quoz = parse(str(eq[0]))
-                    for i in range(1, len(eq)):
-                        eq[i] = parse(str(eq[i]))
-                        quoz /= float(eq[i])
-                    return quoz
-                else:
-                    return float(str(eq[0]))
+def parse(eq = str, returnString = False):
+    eq = processParenthesis(eq)
+    if returnString:
+        return 'placeholder'
+    return eq
+
+def extractParenthesis(eq):
+    startPos = -1
+    endPos = -1
+    openCount = 0
+    parInfo = []
+    for i in range(len(eq)):
+        if eq[i] == '(':
+            if openCount == 0:
+                startPos = i
+            openCount += 1
+        if eq[i] == ')':
+            openCount -= 1
+            if openCount < 0:
+                return 'ERROR'
+            elif openCount == 0:
+                endPos = i
+                parInfo.append([startPos, endPos])
+    return parInfo
+
+def processParenthesis(eq):
+    positions = extractParenthesis(eq)
+    if len(positions) == 0:
+        return eq
+    elif positions == 'ERROR':
+        raise SystemExit
+
+    originalEquation = eq
+    for elem in positions:
+        eq = eq.replace(originalEquation[elem[0] : (elem[1] + 1)], 
+                   parse(originalEquation[(elem[0] + 1) : elem[1]], True), 
+                   1)
+    return eq
 
 
 
-equation = '20 / 5 - 4 / 2 * 12'
+
+equation = '20 / (5 - 4) / (2 * (12 + 5))'
 print(parse(equation))
