@@ -1,8 +1,15 @@
+import math
 
-def parse(eq = str, returnString = False):
-    eq = processParenthesis(eq)
+variables = {'x' : 0,
+             'P' : math.pi}
 
-    result = processOperations(eq)
+def parse(equation = str, returnString = False, x = variables['x']):
+    # removing all whitespaces
+    equation = equation.replace(' ', '')
+    equation = replaceVariables(equation, x)
+
+    equation = processParenthesis(equation)
+    result = processOperations(equation)
     if returnString:
         return str(result)
     else:
@@ -36,7 +43,21 @@ def processParenthesis(eq):
 
     originalEquation = eq
     for elem in positions:
-        eq = eq.replace(originalEquation[elem[0] : (elem[1] + 1)], 
+        trigTest = originalEquation[(elem[0] - 3) : elem[0]]
+        if 'sin' in trigTest:
+            eq = eq.replace(originalEquation[(elem[0] - 3) : (elem[1] + 1)], 
+                   str(math.sin(math.radians(parse(originalEquation[(elem[0] + 1) : elem[1]])))), 
+                   1)
+        elif 'cos' in trigTest:
+            eq = eq.replace(originalEquation[(elem[0] - 3) : (elem[1] + 1)], 
+                   str(math.cos(math.radians(parse(originalEquation[(elem[0] + 1) : elem[1]])))), 
+                   1)
+        elif 'tan' in trigTest:
+            eq = eq.replace(originalEquation[(elem[0] - 3) : (elem[1] + 1)], 
+                   str(math.tan(math.radians(parse(originalEquation[(elem[0] + 1) : elem[1]])))), 
+                   1)
+        else:
+            eq = eq.replace(originalEquation[elem[0] : (elem[1] + 1)], 
                    parse(originalEquation[(elem[0] + 1) : elem[1]], True), 
                    1)
     return eq
@@ -59,7 +80,6 @@ def processOperations(eq):
                     return solveDivision(eq)
                 else:
                     return float(str(eq[0]))
-
 
 def solveAdditions(eq):
     for i in range(len(eq)):
@@ -85,6 +105,11 @@ def solveDivision(eq):
         quoz /= float(eq[i])
     return quoz
 
+def replaceVariables(eq = str, x = variables['x']):
+    for v in variables.keys():
+        eq = eq.replace(v, str(variables[v]))
+    return eq
 
-equation = '20 / (5 - 4) / (2 * (12 + 5))'
+
+equation = '2 * P + 5 + sin(30) * (5 - 3)'
 print(parse(equation))
