@@ -1,19 +1,22 @@
 import math
 
-variables = {'x' : 0,
+variables = {'x' : -1,
              'P' : math.pi}
 
 def parse(equation = str, returnString = False, x = variables['x']):
-    # removing all whitespaces
-    equation = equation.replace(' ', '')
-    equation = replaceVariables(equation, x)
+    try:
+        # removing all whitespaces
+        equation = equation.replace(' ', '')
+        equation = replaceVariables(equation, x)
 
-    equation = processParenthesis(equation)
-    result = processOperations(equation)
-    if returnString:
-        return str(result)
-    else:
-        return result
+        equation = processParenthesis(equation)
+        result = processOperations(equation)
+        if returnString:
+            return str(result)
+        else:
+            return result
+    except ValueError:
+        return float('NaN')
 
 def extractParenthesis(eq):
     startPos = -1
@@ -56,9 +59,13 @@ def processParenthesis(eq):
             eq = eq.replace(originalEquation[(elem[0] - 3) : (elem[1] + 1)], 
                    str(math.tan(math.radians(parse(originalEquation[(elem[0] + 1) : elem[1]])))), 
                    1)
+        elif 'sqr' in trigTest:
+            eq = eq.replace(originalEquation[(elem[0] - 3) : (elem[1] + 1)], 
+                   str(math.sqrt(parse(originalEquation[(elem[0] + 1) : elem[1]]))), 
+                   1)
         else:
             eq = eq.replace(originalEquation[elem[0] : (elem[1] + 1)], 
-                   parse(originalEquation[(elem[0] + 1) : elem[1]], True), 
+                   str(parse(originalEquation[(elem[0] + 1) : elem[1]], True)), 
                    1)
     return eq
 
@@ -111,5 +118,5 @@ def replaceVariables(eq = str, x = variables['x']):
     return eq
 
 
-equation = '2 * P + 5 + sin(30) * (5 - 3)'
+equation = 'x / (x + 1)'
 print(parse(equation))
