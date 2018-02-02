@@ -1,6 +1,6 @@
 import math
 
-variables = {'x' : -1,
+variables = {'x' : 1,
              'P' : math.pi}
 
 def parse(equation = str, returnString = False, x = variables['x']):
@@ -118,5 +118,6 @@ def replaceVariables(eq = str, x = variables['x']):
     return eq
 
 
-equation = 'x / (x + 1)'
-print(parse(equation))
+if __name__ == '__main__':
+    equation = '2 * x + 2'
+    print(parse(equation))
